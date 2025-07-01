@@ -11,6 +11,19 @@ interface Flashcard {
   id: string
   question: string
   answer: string
+  difficulty?: 'easy' | 'medium' | 'hard' | null
+  reviewCount: number
+  lastReviewed?: Date
+  masteryLevel: number // 0-100, where 100 is mastered
+}
+
+interface StudyStats{
+  totalCards: number
+  easyCards: number
+  mediumCards: number
+  hardCards: number
+  masteredCards: number
+  studyStreak: number
 }
 
 function App() {
@@ -19,6 +32,15 @@ function App() {
   const [currentCard, setCurrentCard] = useState(0)
   const [showAnswer, setShowAnswer] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [studyMode, setStudyMode] = useState<'all' | 'difficult' | 'review'>('all')
+  const [stats, setStats] = useState<StudyStats>({
+    totalCards: 0,
+    easyCards: 0,
+    mediumCards: 0,
+    hardCards: 0,
+    masteredCards: 0,
+    studyStreak: 0
+  });
 
   const onDrop =useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
@@ -38,9 +60,18 @@ function App() {
       const generatedFlashcards = await generateFlashcards(text);
       console.log('Generated flashcards:', generatedFlashcards);
 
-      setFlashcards(generatedFlashcards);
+      // add default difficulty props
+      const enhancedFlashcards: Flashcard[] = generatedFlashcards.map(card => ({
+        ...card,
+        difficulty: null,
+        reviewCount: 0,
+        masteryLevel: 0
+      }));
+
+      setFlashcards(enhancedFlashcards);
       setCurrentCard(0);
       setShowAnswer(false);
+      updateStats(enhancedFlashcards);
     } catch (err) {
       console.error('Error processing file:', err);
       setError('Failed to process file. Try again.');
@@ -62,13 +93,70 @@ function App() {
     maxFiles: 1
   });
 
+  // difficulty rating
+  const rateDifficulty = (difficulty: 'easy' | 'medium' | 'hard') => {
+    const updatedCards = [...flashcards];
+    const card= updatedCards[currentCard];
+
+    card.difficulty = difficulty;
+    card.reviewCount += 1;
+    card.lastReviewed = new Date();
+
+    // update mastery level based on difficulty
+    switch (difficulty) {
+      case 'easy':
+        card.masteryLevel = Math.min(100, card.masteryLevel + 20);
+        break;
+      case 'medium':
+        card.masteryLevel = Math.min(100, card.masteryLevel + 10);
+        break;
+      case 'hard':
+        card.masteryLevel = Math.max(0, card.masteryLevel - 5);
+        break;
+    }
+
+    setFlashcards(updatedCards);
+    updateStats(updatedCards);
+
+    setTimeout(() => {
+      nextCard();
+    }, 1000);
+  }
+
+  const updateStats = (cards: Flashcard[]) => {
+    const newStats: StudyStats = {
+      totalCards: cards.length,
+      easyCards: cards.filter(c => c.difficulty === 'easy').length,
+      mediumCards: cards.filter(c => c.difficulty === 'medium').length,
+      hardCards: cards.filter(c => c.difficulty === 'hard').length,
+      masteredCards: cards.filter(c => c.masteryLevel >= 80).length,
+      studyStreak: 0 // We'll implement this later
+    };
+    setStats(newStats);
+  };
+
+  const getFilteredCards = () => {
+    switch (studyMode) {
+      case 'difficult':
+        return flashcards.filter(card => card.difficulty === 'hard' || card.masteryLevel < 50);
+      case 'review':
+        return flashcards.filter(card => card.reviewCount > 0 && card.masteryLevel < 80);
+      default:
+        return flashcards;
+    }
+  };
+
+  const filteredCards = getFilteredCards();
+  const currentFilteredCard = filteredCards[currentCard];
+
+
   const nextCard = () => {
-    setCurrentCard((prev) => (prev + 1) % flashcards.length);
+    setCurrentCard((prev) => (prev + 1) % filteredCards.length);
     setShowAnswer(false);
   };
 
   const prevCard = () => {
-    setCurrentCard((prev) => (prev - 1 + flashcards.length) % flashcards.length);
+    setCurrentCard((prev) => (prev - 1 + filteredCards.length) % filteredCards.length);
     setShowAnswer(false);
   };
 
@@ -113,42 +201,144 @@ function App() {
               )}
             </div>
           ) : (
+            <div className="study-container">
+              {/* Study Stats Panel */}
+              <div className="stats-panel">
+                <h3>Study Stats</h3>
+                <div className="stats-grid">
+                  <span className="stat-number">{stats.totalCards}</span>
+                  <span className="stat-label">Total Cards</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-number">{stats.masteredCards}</span>
+                  <span className="stat-label">Mastered</span>
+                </div>
+                <div className="stat-item easy">
+                  <span className="stat-number">{stats.easyCards}</span>
+                  <span className="stat-label">Easy</span>
+                </div>
+                <div className="stat-item medium">
+                  <span className="stat-number">{stats.mediumCards}</span>
+                  <span className="stat-label">Medium</span>
+                </div>
+                <div className="stat-item hard">
+                  <span className="stat-number">{stats.hardCards}</span>
+                  <span className="stat-label">Hard</span>
+                </div>
+              </div>
+
+              {/* Study Mode Selector */}
+              <div className="study-mode">
+                <h4>Study Mode</h4>
+                <div className="mode-buttons">
+                  <button
+                    className={studyMode === 'all' ? 'active' : ''}
+                    onClick={() => {
+                      setStudyMode('all');
+                      setCurrentCard(0);
+                    }}
+                  >
+                      All Cards
+                    </button>
+                    <button 
+                    className={studyMode === 'difficult' ? 'active' : ''}
+                    onClick={() => {
+                      setStudyMode('difficult');
+                      setCurrentCard(0);
+                    }}
+                  >
+                    Difficult Only
+                  </button>
+                  <button 
+                    className={studyMode === 'review' ? 'active' : ''}
+                    onClick={() => {
+                      setStudyMode('review');
+                      setCurrentCard(0);
+                    }}
+                  >
+                    Review Mode
+                  </button>
+                </div>
+              </div>
+
+              {/* Flashcard Section */}
             <div className="flashcard-section">
               <div className="flashcard-counter">
-                Card {currentCard+1} of {flashcards.length}
+                Card {currentCard + 1} of {filteredCards.length}
+                {currentFilteredCard?.masteryLevel !== undefined && (
+                  <div className="mastery-bar">
+                    <div 
+                      className="mastery-fill" 
+                      style={{ width: `${currentFilteredCard.masteryLevel}%` }}
+                    ></div>
+                  </div>
+                )}
               </div>
+              
               <div className="flashcard">
                 <div className="card-content">
                   <h3>Question:</h3>
-                  <p>{flashcards[currentCard].question}</p>
-
+                  <p>{currentFilteredCard?.question}</p>
+                  
                   {showAnswer && (
                     <>
                       <h3>Answer:</h3>
-                      <p>{flashcards[currentCard].answer}</p>
+                      <p>{currentFilteredCard?.answer}</p>
                     </>
                   )}
                 </div>
-
-                <div className="card-action">
+                
+                <div className="card-actions">
                   <button onClick={() => setShowAnswer(!showAnswer)}>
                     {showAnswer ? 'Hide Answer' : 'Show Answer'}
                   </button>
-
+                  
+                  {showAnswer && (
+                    <div className="difficulty-rating">
+                      <p>How difficult was this card?</p>
+                      <div className="difficulty-buttons">
+                        <button 
+                          className="easy-btn"
+                          onClick={() => rateDifficulty('easy')}
+                        >
+                          😊 Easy
+                        </button>
+                        <button 
+                          className="medium-btn"
+                          onClick={() => rateDifficulty('medium')}
+                        >
+                          🤔 Medium
+                        </button>
+                        <button 
+                          className="hard-btn"
+                          onClick={() => rateDifficulty('hard')}
+                        >
+                          😅 Hard
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  
                   <div className="navigation">
-                    <button onClick={prevCard}>Previous</button>
-                    <button onClick={nextCard}>Next</button>
+                    <button onClick={prevCard}>← Previous</button>
+                    <button onClick={nextCard}>Next →</button>
                   </div>
-
+                  
                   <button onClick={() => {
                     setFlashcards([]);
                     setCurrentCard(0);
                     setShowAnswer(false);
-                    setError(null);
-                  }}>Upload New File</button>
+                    setStudyMode('all');
+                  }}>
+                    Upload New File
+                  </button>
                 </div>
               </div>
             </div>
+          </div>
+
+                  
+            
           )
           
         }
