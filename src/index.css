@@ -6,7 +6,7 @@
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: rgba(75, 70, 70, 0.95);
+  background: linear-gradient(135deg, #ea6666, #764ba2);
   min-height: 100vh;
   color: #333;
 }
@@ -19,7 +19,8 @@ body {
 
 /* Header Styling */
 .app-header {
-  background: rgba(75, 70, 70, 0.95);
+  /* background: rgba(75, 70, 70, 0.95); */
+  background: linear-gradient(135deg, #ea6666, #764ba2);
   backdrop-filter: blur(10px);
   padding: 2rem 1rem;
   text-align: center;
@@ -37,14 +38,14 @@ body {
 .title-header img {
   width: 100px;
   height: auto;
-  
+  object-fit: contain;
 }
 
 .app-header h1 {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
   /* background: linear-gradient(135deg, #667eea, #764ba2); */
-  background: linear-gradient(135deg, #ea6666, #764ba2);
+  background: #ddd;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -63,7 +64,7 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
+  padding: 1rem;
 }
 
 /* Upload Section */

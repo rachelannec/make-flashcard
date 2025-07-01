@@ -25,7 +25,7 @@ export async function generateFlashcards(text: string): Promise<Flashcard[]> {
     try{
         const model =genAI.getGenerativeModel({ model: 'gemini-2.0-flash'});
 
-        const prompt = `Based on the following text, generate 8-12 flashcards for active recall learning. Return the flashcards as a JSON array, where each item is an object with a "question" and an "answer". The questions should be thought-provoking but not overly complex. Answers must be short, clear, and use simple language. Focus on key concepts, definitions, or cause-effect relationships found in the text. Use identification, tru/false, and multiple-choice questions where appropriate.
+        const prompt = `Based on the following text, generate 8-12 flashcards for active recall learning. Return the flashcards as a JSON array, where each item is an object with a "question" and an "answer". The questions should be thought-provoking but not overly complex. Answers must be short, clear, and use simple language. Use identification (provide the definition as question and the terminology as answer), true/false, and multiple-choice questions where appropriate.
 
 
         Format your response as a valid JSON array with this exact structure:
