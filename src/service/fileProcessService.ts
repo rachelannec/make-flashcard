@@ -84,16 +84,16 @@ async function extractTextFromPPTX(file: File): Promise<string>{
     console.log('🔄 Starting PPTX text extraction...');
     const arrayBuffer = await file.arrayBuffer();
     const zip = await JSZip.loadAsync(arrayBuffer);
-    const zipFile = await zip.loadAsync(arrayBuffer);
+  
 
     let fullText = '';
     let slideCount =0;
 
     // extract text from slides
-    for(const filename in zipFile.files) {
+    for(const filename in zip.files) {
       if (filename.startsWith('ppt/slides/slide') && filename.endsWith('.xml')) {
         slideCount++;
-        const slideXml = await zipFile.files[filename].async('text');
+        const slideXml = await zip.files[filename].async('text');
         const slideText= extractTextFromXML(slideXml);
         if (slideText.trim()){
           fullText += `\n=== Slide ${slideCount} ===\n${slideText}`;
@@ -102,9 +102,9 @@ async function extractTextFromPPTX(file: File): Promise<string>{
     }
 
     // extract from notes
-    for (const filename in zipFile.files){
-      if(filename.startsWith('ppt/noteSlides/noteSlide') && filename.endsWith('.xml')){
-        const noteXml = await zipFile.files[filename].async('text');
+    for (const filename in zip.files){
+      if(filename.startsWith('ppt/notesSlides/notesSlide') && filename.endsWith('.xml')){
+        const noteXml = await zip.files[filename].async('text');
         const noteText = extractTextFromXML(noteXml);
         if(noteText.trim()){
           fullText += `\n=== Notes for Slide ${slideCount} ===\n${noteText}`;
