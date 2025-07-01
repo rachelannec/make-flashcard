@@ -124,7 +124,7 @@ function App() {
 
                 <div className="card-action">
                   <button onClick={() => setShowAnswer(!showAnswer)}>
-                    {showAnswer ? 'Hide Answer' : 'SHow Answer'}
+                    {showAnswer ? 'Hide Answer' : 'Show Answer'}
                   </button>
 
                   <div className="navigation">
