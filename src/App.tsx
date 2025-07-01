@@ -53,7 +53,11 @@ function App() {
     onDrop,
     accept: {
       'application/pdf': ['.pdf'],
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation': ['.pptx'],
+      'text/plain': ['.txt'],
+      'text/csv': ['.csv'],
+      'text/markdown': ['.md']
     }, 
     maxFiles: 1
   });
@@ -75,14 +79,15 @@ function App() {
       <header className="app-header">
         <h1>📚 Flashcard Generator</h1>
         <p>Upload you files and generate flashcard for active recall!</p>
+        
       </header>
 
       <main>
         {flashcards.length === 0 ? (
             <div className="upload-section">
               <h2>Upload Your Files</h2>
-              <p>Suppoted formats: PDF, DOCX</p>
-              
+              <p>Suppoted formats: PDF, DOCX, PPTX, TXT, MD, CSV</p>
+
               <div {...getRootProps()} className={`upload-area ${isDragActive ? 'drag-active' : ''}`}>
                 <input {...getInputProps()} />
                 {isProcessing ? (
@@ -143,6 +148,7 @@ function App() {
             </div>
           )
         }
+        <h6>AI can make mistake. Please check for accuracy</h6>
       </main>
 
     </div>
