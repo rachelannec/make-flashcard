@@ -78,7 +78,7 @@ function App() {
     <div className='App'>
       <header className="app-header">
         <div className="title-header">
-          <img src="src/assets/logo.png" alt="Flashcard Logo" />
+          <img src="src\assets\logo.png" alt="Flashcard Logo" />
           <h1>Flashcard Generator</h1>
         </div>
         <p>Upload you files and generate flashcard for active recall!</p>
