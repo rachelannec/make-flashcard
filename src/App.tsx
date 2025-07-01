@@ -77,7 +77,10 @@ function App() {
   return(
     <div className='App'>
       <header className="app-header">
-        <h1>📚 Flashcard Generator</h1>
+        <div className="title-header">
+          <img src="src/assets/logo.png" alt="Flashcard Logo" />
+          <h1>Flashcard Generator</h1>
+        </div>
         <p>Upload you files and generate flashcard for active recall!</p>
         
       </header>
@@ -86,13 +89,13 @@ function App() {
         {flashcards.length === 0 ? (
             <div className="upload-section">
               <h2>Upload Your Files</h2>
-              <p>Suppoted formats: PDF, DOCX, PPTX, TXT, MD, CSV</p>
+              <p>Supported formats: PDF, DOCX, PPTX, TXT, MD, CSV</p>
 
               <div {...getRootProps()} className={`upload-area ${isDragActive ? 'drag-active' : ''}`}>
                 <input {...getInputProps()} />
                 {isProcessing ? (
                   <div className="processing">
-                    <p>🔄 Processing your file...</p>
+                    <p>Processing your file...</p>
                     <p>Generating flashcards with AI...</p>
                   </div>
                 ) : (
@@ -147,10 +150,14 @@ function App() {
               </div>
             </div>
           )
+          
         }
-        <h6>AI can make mistake. Please check for accuracy</h6>
+        
       </main>
-
+      
+      <footer className="app-footer">
+        <h6>AI can make mistake. Please check for accuracy</h6>
+      </footer>
     </div>
   )
 }
