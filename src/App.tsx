@@ -202,6 +202,83 @@ function App() {
             </div>
           ) : (
             <div className="study-container">
+              
+
+              {/* Flashcard Section */}
+              <div className="flashcard-section">
+                <div className="flashcard-counter">
+                  Card {currentCard + 1} of {filteredCards.length}
+                  {currentFilteredCard?.masteryLevel !== undefined && (
+                    <div className="mastery-bar">
+                      <div 
+                        className="mastery-fill" 
+                        style={{ width: `${currentFilteredCard.masteryLevel}%` }}
+                      ></div>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flashcard">
+                  <div className="card-content">
+                    <h3>Question:</h3>
+                    <p>{currentFilteredCard?.question}</p>
+                    
+                    {showAnswer && (
+                      <>
+                        <h3>Answer:</h3>
+                        <strong>{currentFilteredCard?.answer}</strong>
+                      </>
+                    )}
+                  </div>
+                  
+                  <div className="card-actions">
+                    <button onClick={() => setShowAnswer(!showAnswer)}>
+                      {showAnswer ? 'Hide Answer' : 'Show Answer'}
+                    </button>
+                    
+                    {showAnswer && (
+                      <div className="difficulty-rating">
+                        <p>How difficult was this card?</p>
+                        <div className="difficulty-buttons">
+                          <button 
+                            className="easy-btn"
+                            onClick={() => rateDifficulty('easy')}
+                          >
+                            😊 Easy
+                          </button>
+                          <button 
+                            className="medium-btn"
+                            onClick={() => rateDifficulty('medium')}
+                          >
+                            🤔 Medium
+                          </button>
+                          <button 
+                            className="hard-btn"
+                            onClick={() => rateDifficulty('hard')}
+                          >
+                            😅 Hard
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="navigation">
+                      <button onClick={prevCard}>← Previous</button>
+                      <button onClick={nextCard}>Next →</button>
+                    </div>
+                    
+                    <button onClick={() => {
+                      setFlashcards([]);
+                      setCurrentCard(0);
+                      setShowAnswer(false);
+                      setStudyMode('all');
+                    }}>
+                      Upload New File
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
               {/* Study Stats Panel */}
               <div className="stats-panel">
                 <h3>Study Stats</h3>
@@ -226,7 +303,7 @@ function App() {
                   <span className="stat-label">Hard</span>
                 </div>
               </div>
-
+              
               {/* Study Mode Selector */}
               <div className="study-mode">
                 <h4>Study Mode</h4>
@@ -261,80 +338,7 @@ function App() {
                 </div>
               </div>
 
-              {/* Flashcard Section */}
-            <div className="flashcard-section">
-              <div className="flashcard-counter">
-                Card {currentCard + 1} of {filteredCards.length}
-                {currentFilteredCard?.masteryLevel !== undefined && (
-                  <div className="mastery-bar">
-                    <div 
-                      className="mastery-fill" 
-                      style={{ width: `${currentFilteredCard.masteryLevel}%` }}
-                    ></div>
-                  </div>
-                )}
-              </div>
               
-              <div className="flashcard">
-                <div className="card-content">
-                  <h3>Question:</h3>
-                  <p>{currentFilteredCard?.question}</p>
-                  
-                  {showAnswer && (
-                    <>
-                      <h3>Answer:</h3>
-                      <p>{currentFilteredCard?.answer}</p>
-                    </>
-                  )}
-                </div>
-                
-                <div className="card-actions">
-                  <button onClick={() => setShowAnswer(!showAnswer)}>
-                    {showAnswer ? 'Hide Answer' : 'Show Answer'}
-                  </button>
-                  
-                  {showAnswer && (
-                    <div className="difficulty-rating">
-                      <p>How difficult was this card?</p>
-                      <div className="difficulty-buttons">
-                        <button 
-                          className="easy-btn"
-                          onClick={() => rateDifficulty('easy')}
-                        >
-                          😊 Easy
-                        </button>
-                        <button 
-                          className="medium-btn"
-                          onClick={() => rateDifficulty('medium')}
-                        >
-                          🤔 Medium
-                        </button>
-                        <button 
-                          className="hard-btn"
-                          onClick={() => rateDifficulty('hard')}
-                        >
-                          😅 Hard
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div className="navigation">
-                    <button onClick={prevCard}>← Previous</button>
-                    <button onClick={nextCard}>Next →</button>
-                  </div>
-                  
-                  <button onClick={() => {
-                    setFlashcards([]);
-                    setCurrentCard(0);
-                    setShowAnswer(false);
-                    setStudyMode('all');
-                  }}>
-                    Upload New File
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
 
                   
